@@ -1,0 +1,1979 @@
+﻿<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KoinTakdir â€” Pembuat Keputusan Dua Pilihan</title>
+    <meta name="description" content="Aplikasi web penentu keputusan dua pilihan dengan animasi koin 3D dan audio interaktif.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+/* ==========================================================================
+   KOINTAKDIR â€” REFINED DESIGN SYSTEM & STYLESHEET
+   Clean, modern, readable, and professional (Zero AI Slop)
+   ========================================================================== */
+
+:root {
+    /* Color Palette: Refined Neutral Slate & Precious Metals */
+    --bg-page: #0a0e17;
+    --bg-surface: #111726;
+    --bg-surface-elevated: #182236;
+    --bg-input: #0c121e;
+    
+    --border-subtle: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.16);
+    --border-focus: #f59e0b;
+    
+    /* Text Hierarchy */
+    --text-primary: #f8fafc;
+    --text-secondary: #94a3b8;
+    --text-muted: #64748b;
+    
+    /* Metallic Accents */
+    --gold-primary: #f59e0b;
+    --gold-hover: #d97706;
+    --gold-subtle: rgba(245, 158, 11, 0.12);
+    --gold-border: rgba(245, 158, 11, 0.35);
+    
+    --silver-primary: #cbd5e1;
+    --silver-subtle: rgba(203, 213, 225, 0.12);
+    --silver-border: rgba(203, 213, 225, 0.35);
+    
+    /* Functional */
+    --danger: #f43f5e;
+    --danger-subtle: rgba(244, 63, 94, 0.12);
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 16px;
+    --radius-xl: 20px;
+    
+    --shadow-card: 0 16px 40px -10px rgba(0, 0, 0, 0.6), 0 0 1px 1px rgba(255, 255, 255, 0.05);
+    --shadow-btn: 0 4px 14px -2px rgba(245, 158, 11, 0.4);
+}
+
+/* Base Reset & Typography */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-page);
+    color: var(--text-primary);
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 24px 16px;
+    overflow-x: hidden;
+    position: relative;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Subtle Ambient Gradient (Refined, not muddy) */
+.background-glow {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: 
+        radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.08) 0%, transparent 60%),
+        radial-gradient(circle at 80% 100%, rgba(245, 158, 11, 0.04) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+#confettiCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 1000;
+}
+
+/* App Shell Container */
+.app-shell {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-card);
+    width: 100%;
+    max-width: 500px;
+    padding: 28px 24px;
+    position: relative;
+    z-index: 10;
+    transition: border-color 0.3s ease;
+}
+
+.app-shell.suspense-active {
+    border-color: rgba(244, 63, 94, 0.4);
+}
+
+/* Header & Brand */
+.app-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 18px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border-subtle);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    text-align: left;
+}
+
+.brand-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-md);
+    background: var(--gold-subtle);
+    border: 1px solid var(--gold-border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--gold-primary);
+}
+
+.brand-title {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    letter-spacing: -0.3px;
+    line-height: 1.2;
+}
+
+.brand-subtitle {
+    font-size: 0.76rem;
+    color: var(--text-secondary);
+}
+
+/* Sound Toggle Control */
+.sound-toggle-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-secondary);
+    padding: 7px 12px;
+    border-radius: var(--radius-md);
+    font-size: 0.76rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.sound-toggle-btn:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+}
+
+/* Step Progress Indicator */
+.step-progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    padding: 6px 10px;
+    border-radius: var(--radius-md);
+    margin-bottom: 22px;
+}
+
+.step-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    transition: all 0.2s ease;
+}
+
+.step-badge.active {
+    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.step-number {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.step-badge.active .step-number {
+    background: var(--gold-primary);
+    color: #1a1300;
+}
+
+.step-divider {
+    flex-grow: 1;
+    height: 1px;
+    background: var(--border-subtle);
+    margin: 0 10px;
+}
+
+/* Panels */
+.panel {
+    display: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.panel.active {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.panel-header {
+    text-align: left;
+    margin-bottom: 18px;
+}
+
+.panel-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+    letter-spacing: -0.2px;
+}
+
+.panel-description {
+    font-size: 0.82rem;
+    color: var(--text-secondary);
+    line-height: 1.45;
+}
+
+/* Form Controls */
+.form-group {
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.form-label-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.form-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.form-label.label-gold { color: #facc15; }
+.form-label.label-silver { color: #cbd5e1; }
+
+.side-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 4px;
+    font-size: 0.68rem;
+    font-weight: 800;
+}
+
+.side-indicator.gold {
+    background: var(--gold-primary);
+    color: #1a1300;
+}
+
+.side-indicator.silver {
+    background: #cbd5e1;
+    color: #0f172a;
+}
+
+.badge-required {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: #f87171;
+    background: var(--danger-subtle);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid rgba(248, 113, 113, 0.2);
+}
+
+.input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 14px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+}
+
+input[type="text"] {
+    width: 100%;
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-md);
+    padding: 12px 14px;
+    color: var(--text-primary);
+    font-family: inherit;
+    font-size: 0.92rem;
+    transition: all 0.2s ease;
+}
+
+.input-container input[type="text"] {
+    padding-left: 40px;
+}
+
+input[type="text"]::placeholder {
+    color: #475569;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: var(--border-focus);
+    background: #101625;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
+}
+
+input[type="text"].is-invalid {
+    border-color: var(--danger) !important;
+    background: rgba(244, 63, 94, 0.04);
+}
+
+.form-error {
+    display: none;
+    font-size: 0.76rem;
+    color: #fb7185;
+    margin-top: 6px;
+}
+
+.form-error.visible {
+    display: block;
+}
+
+/* Timer Slider & Presets */
+.timer-counter {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--gold-primary);
+    background: var(--gold-subtle);
+    border: 1px solid var(--gold-border);
+    padding: 2px 8px;
+    border-radius: var(--radius-sm);
+}
+
+.slider-wrapper {
+    margin: 10px 0 14px 0;
+}
+
+input[type="range"] {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: rgba(255, 255, 255, 0.1);
+    outline: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffffff;
+    cursor: pointer;
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.4);
+    border: 2px solid var(--gold-primary);
+    transition: transform 0.15s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.15);
+}
+
+.presets-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+}
+
+.preset-chip {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    color: var(--text-secondary);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 7px 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.preset-chip:hover, .preset-chip.active {
+    background: var(--gold-subtle);
+    border-color: var(--gold-border);
+    color: var(--gold-primary);
+}
+
+/* Step 2 Session Summary */
+.session-summary {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    padding: 8px 12px;
+    border-radius: var(--radius-md);
+    margin-bottom: 16px;
+    font-size: 0.78rem;
+}
+
+.session-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.user-pill {
+    color: #38bdf8;
+    font-weight: 700;
+}
+
+.dot-separator {
+    color: var(--text-muted);
+}
+
+.time-pill {
+    color: var(--gold-primary);
+    font-weight: 700;
+}
+
+.btn-text-action {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.btn-text-action:hover {
+    color: var(--text-primary);
+    text-decoration: underline;
+}
+
+/* Quick Examples */
+.quick-examples {
+    margin-top: -6px;
+    margin-bottom: 16px;
+    text-align: left;
+}
+
+.examples-label {
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    margin-right: 6px;
+}
+
+.examples-list {
+    display: inline-flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.btn-example {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-subtle);
+    border-radius: 4px;
+    color: var(--text-secondary);
+    font-size: 0.7rem;
+    font-weight: 600;
+    padding: 2px 7px;
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.btn-example:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-primary);
+    border-color: var(--border-hover);
+}
+
+/* ==========================================================================
+   PRECISION 3D COIN ARENA (CONTAINED, CLEAN EMBOSSED FACES)
+   ========================================================================== */
+.coin-arena {
+    position: relative;
+    width: 100%;
+    height: 155px;
+    margin: 10px 0 14px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-lg);
+}
+
+.pedestal-ring {
+    position: absolute;
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    border: 1px dashed rgba(255, 255, 255, 0.1);
+    animation: rotatePedestal 24s linear infinite;
+    pointer-events: none;
+}
+
+@keyframes rotatePedestal {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.coin-wrapper {
+    perspective: 1000px;
+    -webkit-perspective: 1000px;
+    width: 110px;
+    height: 110px;
+    position: relative;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    z-index: 5;
+}
+
+.coin-wrapper:not(.flipping) {
+    animation: idleFloat 3s ease-in-out infinite alternate;
+}
+
+@keyframes idleFloat {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-4px); }
+}
+
+/* Strictly In-Place Rotation Physics: No upward leap covering inputs */
+.coin-wrapper.flipping {
+    animation: flipInPlace 10s cubic-bezier(0.08, 0.95, 0.15, 1) forwards;
+}
+
+@keyframes flipInPlace {
+    0% { transform: scale(1); }
+    15% { transform: scale(1.06); }
+    50% { transform: scale(1.02); }
+    100% { transform: scale(1); }
+}
+
+.coin {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    transform-style: preserve-3d;
+    -webkit-transform-style: preserve-3d;
+    border-radius: 50%;
+}
+
+.coin-shadow {
+    width: 80px;
+    height: 10px;
+    background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0) 75%);
+    border-radius: 50%;
+    margin-top: 6px;
+}
+
+/* 3D Coin Faces (Minted Metallic Texture) */
+.coin-face {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 
+        inset 0 0 0 2px rgba(0, 0, 0, 0.35),
+        inset 0 0 12px rgba(0, 0, 0, 0.45),
+        inset 0 2px 4px rgba(255, 255, 255, 0.45),
+        0 8px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Side A (Gold) */
+.coin-face-heads {
+    background: radial-gradient(circle at 35% 30%, #fffbeb 0%, #f59e0b 45%, #b45309 80%, #78350f 100%);
+    border: 4px ridge #d97706;
+    color: #451a03;
+    transform: rotateY(0deg) translateZ(4px);
+    -webkit-transform: rotateY(0deg) translateZ(4px);
+}
+
+/* Side B (Silver) */
+.coin-face-tails {
+    background: radial-gradient(circle at 35% 30%, #ffffff 0%, #cbd5e1 45%, #64748b 80%, #334155 100%);
+    border: 4px ridge #94a3b8;
+    color: #0f172a;
+    transform: rotateY(180deg) translateZ(4px);
+    -webkit-transform: rotateY(180deg) translateZ(4px);
+}
+
+.coin-emblem {
+    width: 22px;
+    height: 22px;
+    margin-bottom: 2px;
+    filter: drop-shadow(0 1px 2px rgba(0,0,0,0.25));
+}
+
+.coin-letter {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 2.3rem;
+    font-weight: 800;
+    line-height: 1;
+    text-shadow: 1px 1px 2px rgba(255, 255, 255, 0.5), -1px -1px 2px rgba(0, 0, 0, 0.3);
+    letter-spacing: -1px;
+}
+
+/* Suspense Status Ticker */
+.status-ticker {
+    min-height: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 12px;
+    transition: color 0.2s;
+}
+
+.status-ticker.active {
+    color: #fb7185;
+    animation: pulseTicker 1s infinite alternate ease-in-out;
+}
+
+@keyframes pulseTicker {
+    0% { opacity: 0.8; }
+    100% { opacity: 1; color: var(--gold-primary); }
+}
+
+/* Primary Action Button */
+.btn-primary {
+    background: var(--gold-primary);
+    color: #1a1300;
+    border: none;
+    padding: 13px 22px;
+    font-family: inherit;
+    font-size: 0.94rem;
+    font-weight: 700;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    box-shadow: var(--shadow-btn);
+    width: 100%;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: var(--gold-hover);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px -2px rgba(245, 158, 11, 0.55);
+}
+
+.btn-primary:active:not(:disabled) {
+    transform: translateY(1px);
+}
+
+.btn-primary:disabled {
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text-muted);
+    box-shadow: none;
+    cursor: not-allowed;
+}
+
+/* Verdict / Result Card */
+.verdict-container {
+    margin-top: 18px;
+    min-height: 80px;
+    display: flex;
+    flex-direction: column;
+}
+
+.verdict-card {
+    display: none;
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--gold-border);
+    border-radius: var(--radius-lg);
+    padding: 18px 20px;
+    text-align: center;
+    animation: scaleIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+.verdict-card.visible {
+    display: block;
+}
+
+@keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.95); }
+    to { opacity: 1; transform: scale(1); }
+}
+
+.verdict-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-subtle);
+    font-size: 0.76rem;
+}
+
+.verdict-tag {
+    color: var(--gold-primary);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.verdict-user {
+    color: var(--text-secondary);
+    font-weight: 600;
+}
+
+.verdict-side-pill {
+    display: inline-block;
+    font-size: 0.74rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.verdict-choice {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.3;
+    letter-spacing: -0.3px;
+    margin-bottom: 14px;
+}
+
+.verdict-actions {
+    display: flex;
+    gap: 8px;
+    justify-content: center;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    padding: 8px 14px;
+    font-family: inherit;
+    font-size: 0.78rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--border-hover);
+    transform: translateY(-1px);
+}
+
+/* Footer Stats */
+.app-footer {
+    margin-top: 22px;
+    padding-top: 14px;
+    border-top: 1px solid var(--border-subtle);
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.stat-item {
+    text-align: center;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.68rem;
+    color: var(--text-muted);
+}
+
+.stat-value {
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.footer-note {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    text-align: center;
+}
+
+/* Toast Message */
+.toast {
+    position: fixed;
+    bottom: 24px;
+    background: #1e293b;
+    color: #ffffff;
+    border: 1px solid var(--border-hover);
+    padding: 10px 18px;
+    border-radius: 50px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    transform: translateY(40px);
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toast.show {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 480px) {
+    .app-shell {
+        padding: 22px 18px;
+    }
+    
+    .presets-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    
+    .verdict-choice {
+        font-size: 1.3rem;
+    }
+}
+
+</style>
+</head>
+<body>
+
+    <div class="background-glow" aria-hidden="true"></div>
+    <canvas id="confettiCanvas" aria-hidden="true"></canvas>
+
+    <!-- Main Container -->
+    <main class="app-shell" id="appShell">
+        
+        <!-- Header -->
+        <header class="app-header">
+            <div class="brand">
+                <div class="brand-icon" aria-hidden="true">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <path d="M12 6v12"></path>
+                        <path d="M8 10l4-4 4 4"></path>
+                    </svg>
+                </div>
+                <div>
+                    <h1 class="brand-title">KoinTakdir</h1>
+                    <p class="brand-subtitle">Bantu tentukan pilihan saat kamu ragu</p>
+                </div>
+            </div>
+
+            <button class="sound-toggle-btn" id="soundToggleBtn" type="button" aria-label="Pengaturan Suara">
+                <span id="soundIcon" aria-hidden="true">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                        <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                    </svg>
+                </span>
+                <span id="soundLabel">Suara Aktif</span>
+            </button>
+        </header>
+
+        <!-- Step Indicator -->
+        <nav class="step-progress" aria-label="Alur langkah">
+            <div class="step-badge active" id="stepIndicator1">
+                <span class="step-number">1</span>
+                <span class="step-text">Data & Waktu</span>
+            </div>
+            <div class="step-divider" aria-hidden="true"></div>
+            <div class="step-badge" id="stepIndicator2">
+                <span class="step-number">2</span>
+                <span class="step-text">Pilihan & Putar</span>
+            </div>
+        </nav>
+
+        <!-- ============================================== -->
+        <!-- STEP 1: INFORMASI PESERTA & DURASI            -->
+        <!-- ============================================== -->
+        <section class="panel active" id="panelStep1" aria-labelledby="step1Title">
+            <div class="panel-header">
+                <h2 class="panel-title" id="step1Title">Konfigurasi Pengambilan Keputusan</h2>
+                <p class="panel-description">Tentukan siapa yang mengambil keputusan dan berapa lama koin akan berputar.</p>
+            </div>
+
+            <!-- Form Group: Nama Peserta -->
+            <div class="form-group">
+                <div class="form-label-row">
+                    <label for="inputUserName" class="form-label">Nama Kamu / Peserta</label>
+                    <span class="badge-required">Wajib diisi</span>
+                </div>
+                <div class="input-container">
+                    <span class="input-icon" aria-hidden="true">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="12" cy="7" r="4"></circle>
+                        </svg>
+                    </span>
+                    <input 
+                        type="text" 
+                        id="inputUserName" 
+                        placeholder="Contoh: Sayla, Budi, Sarah" 
+                        autocomplete="name"
+                        maxlength="40"
+                    >
+                </div>
+                <p class="form-error" id="userNameError" role="alert"></p>
+            </div>
+
+            <!-- Form Group: Durasi Putaran -->
+            <div class="form-group">
+                <div class="form-label-row">
+                    <label for="timerSlider" class="form-label">Durasi Ketegangan Putaran</label>
+                    <span class="timer-counter" id="timerDisplay">10 Detik</span>
+                </div>
+
+                <div class="slider-wrapper">
+                    <input 
+                        type="range" 
+                        id="timerSlider" 
+                        min="3" 
+                        max="20" 
+                        value="10" 
+                        step="1"
+                        aria-valuemin="3" 
+                        aria-valuemax="20" 
+                        aria-valuenow="10"
+                    >
+                </div>
+
+                <div class="presets-row" role="group" aria-label="Pilihan durasi cepat">
+                    <button type="button" class="preset-chip" data-time="3">3 Detik (Cepat)</button>
+                    <button type="button" class="preset-chip" data-time="5">5 Detik (Standar)</button>
+                    <button type="button" class="preset-chip active" data-time="10">10 Detik (Tegang)</button>
+                    <button type="button" class="preset-chip" data-time="15">15 Detik (Drama)</button>
+                </div>
+            </div>
+
+            <button type="button" class="btn-primary" id="btnGoToStep2">
+                <span>Lanjut ke Masukkan Pilihan</span>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                    <polyline points="12 5 19 12 12 19"></polyline>
+                </svg>
+            </button>
+        </section>
+
+        <!-- ============================================== -->
+        <!-- STEP 2: MASUKKAN 2 PILIHAN & ARENA KOIN 3D    -->
+        <!-- ============================================== -->
+        <section class="panel" id="panelStep2" aria-labelledby="step2Title">
+            
+            <!-- Summary Bar -->
+            <div class="session-summary">
+                <div class="session-meta">
+                    <span class="user-pill" id="summaryUserName">Peserta: -</span>
+                    <span class="dot-separator" aria-hidden="true">â€¢</span>
+                    <span class="time-pill" id="summaryDuration">10 Detik</span>
+                </div>
+                <button type="button" class="btn-text-action" id="btnBackToStep1">
+                    â† Ubah Data
+                </button>
+            </div>
+
+            <div class="panel-header">
+                <h2 class="panel-title" id="step2Title">Masukkan Dua Pilihan Kamu</h2>
+                <p class="panel-description">Tuliskan kedua hal yang membuatmu bimbang. Koin akan memilih salah satunya secara acak.</p>
+            </div>
+
+            <!-- Input Opsi A -->
+            <div class="form-group">
+                <div class="form-label-row">
+                    <label for="inputOptionA" class="form-label label-gold">
+                        <span class="side-indicator gold" aria-hidden="true">A</span>
+                        <span>Pilihan A (Sisi Emas)</span>
+                    </label>
+                    <span class="badge-required">Wajib diisi</span>
+                </div>
+                <input 
+                    type="text" 
+                    id="inputOptionA" 
+                    placeholder="Contoh: Maju Nyatakan Perasaan" 
+                    maxlength="80"
+                    autocomplete="off"
+                >
+                <p class="form-error" id="optionAError" role="alert"></p>
+            </div>
+
+            <!-- Input Opsi B -->
+            <div class="form-group">
+                <div class="form-label-row">
+                    <label for="inputOptionB" class="form-label label-silver">
+                        <span class="side-indicator silver" aria-hidden="true">B</span>
+                        <span>Pilihan B (Sisi Perak)</span>
+                    </label>
+                    <span class="badge-required">Wajib diisi</span>
+                </div>
+                <input 
+                    type="text" 
+                    id="inputOptionB" 
+                    placeholder="Contoh: Pendam dan Lupakan" 
+                    maxlength="80"
+                    autocomplete="off"
+                >
+                <p class="form-error" id="optionBError" role="alert"></p>
+            </div>
+
+            <!-- Contoh Cepat -->
+            <div class="quick-examples">
+                <span class="examples-label">Butuh inspirasi contoh?</span>
+                <div class="examples-list">
+                    <button type="button" class="btn-example" data-a="Nasi Padang Komplit" data-b="Mie Instan 2 Bungkus">Padang vs Mie</button>
+                    <button type="button" class="btn-example" data-a="Maju Nyatakan Perasaan" data-b="Pendam dan Lupakan">Maju vs Pendam</button>
+                    <button type="button" class="btn-example" data-a="Kerjakan Tugas Sekarang" data-b="Istirahat Dulu 30 Menit">Kerja vs Istirahat</button>
+                </div>
+            </div>
+
+            <!-- Arena Koin 3D (In-Place, Non-Overlapping) -->
+            <div class="coin-arena" aria-label="Animasi Koin 3D">
+                <div class="pedestal-ring" aria-hidden="true"></div>
+                <div class="coin-wrapper" id="coinWrapper" role="button" tabindex="0" title="Klik untuk memutar koin">
+                    <div class="coin" id="coin">
+                        <!-- Sisi A (Emas) -->
+                        <div class="coin-face coin-face-heads" id="faceA">
+                            <svg class="coin-emblem" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <circle cx="12" cy="12" r="5"></circle>
+                                <line x1="12" y1="1" x2="12" y2="3" stroke="currentColor" stroke-width="2.5"></line>
+                                <line x1="12" y1="21" x2="12" y2="23" stroke="currentColor" stroke-width="2.5"></line>
+                                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64" stroke="currentColor" stroke-width="2.5"></line>
+                                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78" stroke="currentColor" stroke-width="2.5"></line>
+                                <line x1="1" y1="12" x2="3" y2="12" stroke="currentColor" stroke-width="2.5"></line>
+                                <line x1="21" y1="12" x2="23" y2="12" stroke="currentColor" stroke-width="2.5"></line>
+                            </svg>
+                            <span class="coin-letter">A</span>
+                        </div>
+
+                        <!-- Sisi B (Perak) -->
+                        <div class="coin-face coin-face-tails" id="faceB">
+                            <svg class="coin-emblem" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                            </svg>
+                            <span class="coin-letter">B</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="coin-shadow" id="coinShadow" aria-hidden="true"></div>
+            </div>
+
+            <!-- Ticker & Instruksi -->
+            <div class="status-ticker" id="statusTicker" aria-live="polite"></div>
+
+            <!-- Tombol Putar Utama -->
+            <button type="button" class="btn-primary" id="btnFlipCoin">
+                <span class="btn-icon" aria-hidden="true">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                </span>
+                <span id="btnFlipText">Putar Koin Keputusan</span>
+            </button>
+
+            <!-- Kartu Hasil Keputusan (Verdict) -->
+            <div class="verdict-container" id="verdictContainer" aria-live="assertive">
+                <div class="verdict-card">
+                    <div class="verdict-header">
+                        <span class="verdict-tag" id="verdictTag">Keputusan Resmi</span>
+                        <span class="verdict-user" id="verdictUser"></span>
+                    </div>
+
+                    <div class="verdict-result">
+                        <div class="verdict-side-pill" id="verdictSide">Sisi Terpilih</div>
+                        <h3 class="verdict-choice" id="verdictChoice"></h3>
+                    </div>
+
+                    <div class="verdict-actions">
+                        <button type="button" class="btn-secondary" id="btnCopyVerdict">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            <span id="copyButtonText">Salin Hasil</span>
+                        </button>
+                        <button type="button" class="btn-secondary" id="btnReplayFlip">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                                <polyline points="23 4 23 10 17 10"></polyline>
+                                <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+                            </svg>
+                            <span>Putar Ulang</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer Ringkas & Statistik -->
+        <footer class="app-footer">
+            <div class="stats-row">
+                <div class="stat-item">
+                    <span class="stat-label">Total Diputar</span>
+                    <span class="stat-value" id="statTotalCount">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Pilihan A (Emas)</span>
+                    <span class="stat-value" id="statCountA">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Pilihan B (Perak)</span>
+                    <span class="stat-value" id="statCountB">0</span>
+                </div>
+            </div>
+            <div class="footer-note">
+                <span>KoinTakdir â€¢ Acak murni tanpa manipulasi</span>
+            </div>
+        </footer>
+    </main>
+
+    <!-- Toast Notification Element -->
+    <div class="toast" id="toastMessage" role="status" aria-live="polite"></div>
+
+    <script>
+/**
+ * KOINTAKDIR â€” CORE APPLICATION LOGIC
+ * Clean, modular, reliable vanilla JavaScript (Zero AI Slop)
+ */
+
+(function () {
+    'use strict';
+
+    // --- State Application ---
+    const state = {
+        userName: '',
+        duration: 10,
+        optionA: '',
+        optionB: '',
+        isAudioMuted: false,
+        isFlipping: false,
+        currentRotation: 0,
+        totalFlips: 0,
+        winsA: 0,
+        winsB: 0,
+        lastVerdict: null
+    };
+
+    // --- DOM Elements Cache ---
+    const elements = {
+        // Step 1
+        panelStep1: document.getElementById('panelStep1'),
+        panelStep2: document.getElementById('panelStep2'),
+        stepIndicator1: document.getElementById('stepIndicator1'),
+        stepIndicator2: document.getElementById('stepIndicator2'),
+        inputUserName: document.getElementById('inputUserName'),
+        userNameError: document.getElementById('userNameError'),
+        timerSlider: document.getElementById('timerSlider'),
+        timerDisplay: document.getElementById('timerDisplay'),
+        presetChips: document.querySelectorAll('.preset-chip'),
+        btnGoToStep2: document.getElementById('btnGoToStep2'),
+
+        // Step 2
+        btnBackToStep1: document.getElementById('btnBackToStep1'),
+        summaryUserName: document.getElementById('summaryUserName'),
+        summaryDuration: document.getElementById('summaryDuration'),
+        inputOptionA: document.getElementById('inputOptionA'),
+        inputOptionB: document.getElementById('inputOptionB'),
+        optionAError: document.getElementById('optionAError'),
+        optionBError: document.getElementById('optionBError'),
+        exampleButtons: document.querySelectorAll('.btn-example'),
+
+        // 3D Coin & Arena
+        coinWrapper: document.getElementById('coinWrapper'),
+        coin: document.getElementById('coin'),
+        faceA: document.getElementById('faceA'),
+        faceB: document.getElementById('faceB'),
+        coinShadow: document.getElementById('coinShadow'),
+        statusTicker: document.getElementById('statusTicker'),
+        btnFlipCoin: document.getElementById('btnFlipCoin'),
+        btnFlipText: document.getElementById('btnFlipText'),
+
+        // Verdict Card
+        verdictContainer: document.getElementById('verdictContainer'),
+        verdictUser: document.getElementById('verdictUser'),
+        verdictSide: document.getElementById('verdictSide'),
+        verdictChoice: document.getElementById('verdictChoice'),
+        btnCopyVerdict: document.getElementById('btnCopyVerdict'),
+        copyButtonText: document.getElementById('copyButtonText'),
+        btnReplayFlip: document.getElementById('btnReplayFlip'),
+
+        // Audio & Controls
+        soundToggleBtn: document.getElementById('soundToggleBtn'),
+        soundLabel: document.getElementById('soundLabel'),
+        appShell: document.getElementById('appShell'),
+        confettiCanvas: document.getElementById('confettiCanvas'),
+        toastMessage: document.getElementById('toastMessage'),
+
+        // Stats
+        statTotalCount: document.getElementById('statTotalCount'),
+        statCountA: document.getElementById('statCountA'),
+        statCountB: document.getElementById('statCountB')
+    };
+
+    let audioContext = null;
+    let countdownTimer = null;
+    let tickerInterval = null;
+    let toastTimeout = null;
+
+    // =========================================================================
+    // 1. AUDIO ENGINE (Web Audio API: Tension & Crowd Cheer/Applause)
+    // =========================================================================
+
+    function getAudioContext() {
+        if (!audioContext) {
+            audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+        return audioContext;
+    }
+
+    function toggleAudio() {
+        state.isAudioMuted = !state.isAudioMuted;
+        if (state.isAudioMuted) {
+            elements.soundLabel.textContent = 'Suara Mati';
+            elements.soundToggleBtn.style.opacity = '0.6';
+            showToast('Suara dinonaktifkan');
+        } else {
+            elements.soundLabel.textContent = 'Suara Aktif';
+            elements.soundToggleBtn.style.opacity = '1';
+            showToast('Suara diaktifkan');
+        }
+    }
+
+    /**
+     * Tension sound during the coin spin
+     * Features: Accelerating dual-thump heartbeat + sharp clock ticks + rising cinematic drone
+     */
+    function playTensionAudio(duration) {
+        if (state.isAudioMuted) return;
+        try {
+            const ctx = getAudioContext();
+            const now = ctx.currentTime;
+
+            // Initial coin flick ping
+            const pingOsc = ctx.createOscillator();
+            const pingGain = ctx.createGain();
+            pingOsc.type = 'sine';
+            pingOsc.frequency.setValueAtTime(1050, now);
+            pingOsc.frequency.exponentialRampToValueAtTime(1750, now + 0.12);
+            pingGain.gain.setValueAtTime(0.35, now);
+            pingGain.gain.exponentialRampToValueAtTime(0.001, now + 0.4);
+            pingOsc.connect(pingGain);
+            pingGain.connect(ctx.destination);
+            pingOsc.start(now);
+            pingOsc.stop(now + 0.4);
+
+            // Accelerating heartbeat sub-bass thumps (lub-dub)
+            let beatTime = 0.25;
+            let interval = duration > 8 ? 0.95 : 0.65;
+            while (beatTime < duration - 0.25) {
+                const t = now + beatTime;
+                const progress = beatTime / duration;
+
+                // Lub
+                const oscLub = ctx.createOscillator();
+                const gainLub = ctx.createGain();
+                oscLub.type = 'sine';
+                oscLub.frequency.setValueAtTime(80 + progress * 25, t);
+                oscLub.frequency.exponentialRampToValueAtTime(26, t + 0.14);
+                const vol = 0.35 + progress * 0.35;
+                gainLub.gain.setValueAtTime(vol, t);
+                gainLub.gain.exponentialRampToValueAtTime(0.001, t + 0.15);
+                oscLub.connect(gainLub);
+                gainLub.connect(ctx.destination);
+                oscLub.start(t);
+                oscLub.stop(t + 0.15);
+
+                // Dub
+                const tDub = t + 0.11;
+                if (tDub < now + duration - 0.15) {
+                    const oscDub = ctx.createOscillator();
+                    const gainDub = ctx.createGain();
+                    oscDub.type = 'sine';
+                    oscDub.frequency.setValueAtTime(90 + progress * 30, tDub);
+                    oscDub.frequency.exponentialRampToValueAtTime(28, tDub + 0.12);
+                    gainDub.gain.setValueAtTime(vol * 0.75, tDub);
+                    gainDub.gain.exponentialRampToValueAtTime(0.001, tDub + 0.13);
+                    oscDub.connect(gainDub);
+                    gainDub.connect(ctx.destination);
+                    oscDub.start(tDub);
+                    oscDub.stop(tDub + 0.13);
+                }
+
+                // Clock tick
+                const tickOsc = ctx.createOscillator();
+                const tickGain = ctx.createGain();
+                tickOsc.type = 'triangle';
+                tickOsc.frequency.setValueAtTime(1100 + progress * 1000, t);
+                tickGain.gain.setValueAtTime(0.08 + progress * 0.08, t);
+                tickGain.gain.exponentialRampToValueAtTime(0.001, t + 0.04);
+                tickOsc.connect(tickGain);
+                tickGain.connect(ctx.destination);
+                tickOsc.start(t);
+                tickOsc.stop(t + 0.04);
+
+                interval = Math.max(0.18, interval * 0.88);
+                beatTime += interval;
+            }
+
+            // Rising drone
+            const saw1 = ctx.createOscillator();
+            const saw2 = ctx.createOscillator();
+            const filter = ctx.createBiquadFilter();
+            const gain = ctx.createGain();
+
+            saw1.type = 'sawtooth';
+            saw2.type = 'sawtooth';
+            saw1.frequency.setValueAtTime(55, now + 0.1);
+            saw2.frequency.setValueAtTime(56.5, now + 0.1);
+            saw1.frequency.exponentialRampToValueAtTime(220, now + duration - 0.2);
+            saw2.frequency.exponentialRampToValueAtTime(223, now + duration - 0.2);
+
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(100, now + 0.1);
+            filter.frequency.linearRampToValueAtTime(1300, now + duration - 0.2);
+            filter.Q.setValueAtTime(3.0, now);
+
+            gain.gain.setValueAtTime(0.01, now + 0.1);
+            gain.gain.linearRampToValueAtTime(0.14, now + duration * 0.4);
+            gain.gain.linearRampToValueAtTime(0.28, now + duration - 0.2);
+            gain.gain.exponentialRampToValueAtTime(0.001, now + duration);
+
+            saw1.connect(filter);
+            saw2.connect(filter);
+            filter.connect(gain);
+            gain.connect(ctx.destination);
+
+            saw1.start(now + 0.1);
+            saw2.start(now + 0.1);
+            saw1.stop(now + duration);
+            saw2.stop(now + duration);
+        } catch (e) {
+            console.warn('Audio tension error:', e);
+        }
+    }
+
+    /**
+     * Celebratory sound when the coin lands
+     * Features: Deep landing boom + victory brass fanfare + stadium whistles + crowd cheering harmonies + dense applause
+     */
+    function playCelebrationAudio() {
+        if (state.isAudioMuted) return;
+        try {
+            const ctx = getAudioContext();
+            const now = ctx.currentTime;
+            const totalDur = 4.2;
+
+            // 1. Solid Bass Thump
+            const boomOsc = ctx.createOscillator();
+            const boomGain = ctx.createGain();
+            boomOsc.type = 'sine';
+            boomOsc.frequency.setValueAtTime(150, now);
+            boomOsc.frequency.exponentialRampToValueAtTime(30, now + 0.65);
+            boomGain.gain.setValueAtTime(0.55, now);
+            boomGain.gain.exponentialRampToValueAtTime(0.001, now + 0.7);
+            boomOsc.connect(boomGain);
+            boomGain.connect(ctx.destination);
+            boomOsc.start(now);
+            boomOsc.stop(now + 0.7);
+
+            // 2. Brass Fanfare (C Major)
+            const fanfare = [
+                { f: 523.25, t: 0.00, dur: 0.35, vol: 0.24 },
+                { f: 659.25, t: 0.12, dur: 0.35, vol: 0.24 },
+                { f: 783.99, t: 0.24, dur: 0.40, vol: 0.26 },
+                { f: 1046.50, t: 0.38, dur: 1.25, vol: 0.32 },
+                { f: 1318.51, t: 0.42, dur: 1.20, vol: 0.22 }
+            ];
+
+            fanfare.forEach(item => {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const tStart = now + item.t;
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(item.f, tStart);
+                gain.gain.setValueAtTime(0.01, tStart);
+                gain.gain.linearRampToValueAtTime(item.vol, tStart + 0.04);
+                gain.gain.exponentialRampToValueAtTime(0.001, tStart + item.dur);
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(tStart);
+                osc.stop(tStart + item.dur);
+            });
+
+            // 3. Piercing Stadium Whistles
+            const whistles = [
+                { delay: 0.15, fStart: 1800, fPeak: 2600, dur: 1.3, vibRate: 7.2, vibDepth: 35, vol: 0.30 },
+                { delay: 0.50, fStart: 2100, fPeak: 2950, dur: 1.4, vibRate: 8.0, vibDepth: 45, vol: 0.32 },
+                { delay: 1.10, fStart: 2300, fPeak: 3100, dur: 1.0, vibRate: 9.0, vibDepth: 40, vol: 0.26 }
+            ];
+
+            whistles.forEach(w => {
+                const wStart = now + w.delay;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const lfo = ctx.createOscillator();
+                const lfoGain = ctx.createGain();
+
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(w.fStart, wStart);
+                osc.frequency.exponentialRampToValueAtTime(w.fPeak, wStart + 0.35);
+                osc.frequency.exponentialRampToValueAtTime(w.fStart + 200, wStart + w.dur);
+
+                lfo.frequency.setValueAtTime(w.vibRate, wStart);
+                lfoGain.gain.setValueAtTime(w.vibDepth, wStart);
+                lfo.connect(lfoGain);
+                lfoGain.connect(osc.frequency);
+                lfo.start(wStart);
+                lfo.stop(wStart + w.dur);
+
+                gain.gain.setValueAtTime(0.001, wStart);
+                gain.gain.linearRampToValueAtTime(w.vol, wStart + 0.08);
+                gain.gain.exponentialRampToValueAtTime(0.001, wStart + w.dur);
+
+                osc.connect(gain);
+                gain.connect(ctx.destination);
+                osc.start(wStart);
+                osc.stop(wStart + w.dur);
+            });
+
+            // 4. Vocal Crowd Shouting Harmonies ("WOOO! YEEAAAY!")
+            const crowd = [
+                { delay: 0.08, f1: 220, f2: 440, peak: 560, end: 340, dur: 2.8, vol: 0.35 },
+                { delay: 0.12, f1: 280, f2: 560, peak: 680, end: 420, dur: 3.0, vol: 0.38 },
+                { delay: 0.18, f1: 340, f2: 680, peak: 820, end: 490, dur: 2.7, vol: 0.32 },
+                { delay: 0.25, f1: 420, f2: 840, peak: 980, end: 580, dur: 3.1, vol: 0.36 }
+            ];
+
+            crowd.forEach(c => {
+                const sStart = now + c.delay;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                const filter = ctx.createBiquadFilter();
+
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(c.f1, sStart);
+                osc.frequency.exponentialRampToValueAtTime(c.peak, sStart + 0.45);
+                osc.frequency.exponentialRampToValueAtTime(c.end, sStart + c.dur);
+
+                filter.type = 'peaking';
+                filter.frequency.setValueAtTime(c.f2, sStart);
+                filter.frequency.linearRampToValueAtTime(1400, sStart + 0.5);
+                filter.Q.setValueAtTime(2.0, sStart);
+                filter.gain.setValueAtTime(12, sStart);
+
+                gain.gain.setValueAtTime(0.01, sStart);
+                gain.gain.linearRampToValueAtTime(c.vol, sStart + 0.3);
+                gain.gain.linearRampToValueAtTime(c.vol * 0.8, sStart + c.dur * 0.6);
+                gain.gain.exponentialRampToValueAtTime(0.001, sStart + c.dur);
+
+                osc.connect(filter);
+                filter.connect(gain);
+                gain.connect(ctx.destination);
+
+                osc.start(sStart);
+                osc.stop(sStart + c.dur);
+            });
+
+            // 5. Dense Crowd Applause Buffer (850 Claps)
+            const sampleRate = ctx.sampleRate;
+            const bufferSize = Math.floor(sampleRate * totalDur);
+            const buffer = ctx.createBuffer(2, bufferSize, sampleRate);
+            const left = buffer.getChannelData(0);
+            const right = buffer.getChannelData(1);
+
+            for (let i = 0; i < bufferSize; i++) {
+                const t = i / sampleRate;
+                let env = 1.0;
+                if (t < 0.25) env = t / 0.25;
+                else if (t > 2.0) env = Math.max(0, 1 - (t - 2.0) / 2.2);
+
+                const roar = (Math.random() * 2 - 1) * 0.18 * env;
+                left[i] = roar;
+                right[i] = roar * (0.85 + Math.random() * 0.3);
+            }
+
+            const totalClaps = 850;
+            for (let c = 0; c < totalClaps; c++) {
+                const r = Math.random();
+                const clapTime = 0.04 + Math.pow(r, 0.75) * 3.6;
+                const startIdx = Math.floor(clapTime * sampleRate);
+                const clapDuration = Math.floor((0.018 + Math.random() * 0.025) * sampleRate);
+                const pan = Math.random();
+
+                let clapAmp = 0.35 + Math.random() * 0.55;
+                if (clapTime > 2.2) {
+                    clapAmp *= Math.max(0.15, 1 - (clapTime - 2.2) / 1.8);
+                }
+
+                for (let j = 0; j < clapDuration && (startIdx + j) < bufferSize; j++) {
+                    const prog = j / clapDuration;
+                    const decay = Math.exp(-prog * 9.0) * (1 + 0.35 * Math.sin(prog * 45));
+                    const sample = (Math.random() * 2 - 1) * clapAmp * decay;
+                    left[startIdx + j] += sample * (1 - pan);
+                    right[startIdx + j] += sample * pan;
+                }
+            }
+
+            const source = ctx.createBufferSource();
+            source.buffer = buffer;
+
+            const hpFilter = ctx.createBiquadFilter();
+            hpFilter.type = 'highpass';
+            hpFilter.frequency.setValueAtTime(600, now);
+
+            const presenceFilter = ctx.createBiquadFilter();
+            presenceFilter.type = 'peaking';
+            presenceFilter.frequency.setValueAtTime(1800, now);
+            presenceFilter.Q.setValueAtTime(1.2, now);
+            presenceFilter.gain.setValueAtTime(6, now);
+
+            const appGain = ctx.createGain();
+            appGain.gain.setValueAtTime(1.0, now);
+            appGain.gain.exponentialRampToValueAtTime(0.01, now + totalDur);
+
+            source.connect(hpFilter);
+            hpFilter.connect(presenceFilter);
+            presenceFilter.connect(appGain);
+            appGain.connect(ctx.destination);
+
+            source.start(now);
+        } catch (e) {
+            console.warn('Celebration sound error:', e);
+        }
+    }
+
+    // =========================================================================
+    // 2. CONFETTI BURST ANIMATION
+    // =========================================================================
+
+    function triggerConfetti() {
+        const canvas = elements.confettiCanvas;
+        const ctx = canvas.getContext('2d');
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        const particles = [];
+        const colors = ['#f59e0b', '#fbbf24', '#f43f5e', '#38bdf8', '#ffffff', '#cbd5e1'];
+
+        for (let i = 0; i < 70; i++) {
+            particles.push({
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                vx: (Math.random() - 0.5) * 16,
+                vy: (Math.random() - 0.85) * 18,
+                size: Math.random() * 6 + 4,
+                color: colors[Math.floor(Math.random() * colors.length)],
+                rot: Math.random() * 360,
+                vRot: (Math.random() - 0.5) * 10,
+                alpha: 1
+            });
+        }
+
+        let animationFrame;
+        function update() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            let alive = false;
+
+            particles.forEach(p => {
+                p.x += p.vx;
+                p.y += p.vy;
+                p.vy += 0.38;
+                p.rot += p.vRot;
+                p.alpha -= 0.014;
+
+                if (p.alpha > 0) {
+                    alive = true;
+                    ctx.save();
+                    ctx.globalAlpha = Math.max(0, p.alpha);
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate((p.rot * Math.PI) / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+                }
+            });
+
+            if (alive) {
+                animationFrame = requestAnimationFrame(update);
+            } else {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                cancelAnimationFrame(animationFrame);
+            }
+        }
+        update();
+    }
+
+    // =========================================================================
+    // 3. NAVIGATION & VALIDATION
+    // =========================================================================
+
+    function setStep(stepNumber) {
+        if (state.isFlipping) return;
+
+        if (stepNumber === 1) {
+            elements.panelStep2.classList.remove('active');
+            elements.panelStep1.classList.add('active');
+            elements.stepIndicator2.classList.remove('active');
+            elements.stepIndicator1.classList.add('active');
+        } else if (stepNumber === 2) {
+            elements.panelStep1.classList.remove('active');
+            elements.panelStep2.classList.add('active');
+            elements.stepIndicator1.classList.remove('active');
+            elements.stepIndicator2.classList.add('active');
+            
+            // Focus on Option A
+            setTimeout(() => {
+                elements.inputOptionA.focus();
+            }, 100);
+        }
+    }
+
+    function handleStep1Submission() {
+        const name = elements.inputUserName.value.trim();
+        if (!name) {
+            elements.inputUserName.classList.add('is-invalid');
+            elements.userNameError.textContent = 'Harap isi nama kamu terlebih dahulu.';
+            elements.userNameError.classList.add('visible');
+            elements.inputUserName.focus();
+            return;
+        }
+
+        elements.inputUserName.classList.remove('is-invalid');
+        elements.userNameError.classList.remove('visible');
+
+        state.userName = name;
+        elements.summaryUserName.textContent = `Peserta: ${state.userName}`;
+        elements.summaryDuration.textContent = `${state.duration} Detik`;
+
+        setStep(2);
+    }
+
+    function updateDuration(val) {
+        state.duration = parseInt(val, 10);
+        elements.timerDisplay.textContent = `${state.duration} Detik`;
+        elements.timerSlider.value = state.duration;
+
+        elements.presetChips.forEach(chip => {
+            const chipTime = parseInt(chip.getAttribute('data-time'), 10);
+            if (chipTime === state.duration) {
+                chip.classList.add('active');
+            } else {
+                chip.classList.remove('active');
+            }
+        });
+    }
+
+    function showToast(msg) {
+        elements.toastMessage.textContent = msg;
+        elements.toastMessage.classList.add('show');
+
+        if (toastTimeout) clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => {
+            elements.toastMessage.classList.remove('show');
+        }, 2600);
+    }
+
+    // =========================================================================
+    // 4. COIN FLIP EXECUTION & VERDICT
+    // =========================================================================
+
+    function executeFlip() {
+        if (state.isFlipping) return;
+
+        const valA = elements.inputOptionA.value.trim();
+        const valB = elements.inputOptionB.value.trim();
+
+        let hasError = false;
+        if (!valA) {
+            elements.inputOptionA.classList.add('is-invalid');
+            elements.optionAError.textContent = 'Harap isi Pilihan A.';
+            elements.optionAError.classList.add('visible');
+            hasError = true;
+        } else {
+            elements.inputOptionA.classList.remove('is-invalid');
+            elements.optionAError.classList.remove('visible');
+        }
+
+        if (!valB) {
+            elements.inputOptionB.classList.add('is-invalid');
+            elements.optionBError.textContent = 'Harap isi Pilihan B.';
+            elements.optionBError.classList.add('visible');
+            hasError = true;
+        } else {
+            elements.inputOptionB.classList.remove('is-invalid');
+            elements.optionBError.classList.remove('visible');
+        }
+
+        if (hasError) {
+            if (!valA) elements.inputOptionA.focus();
+            else elements.inputOptionB.focus();
+            return;
+        }
+
+        state.optionA = valA;
+        state.optionB = valB;
+        state.isFlipping = true;
+
+        // UI Prep
+        elements.btnFlipCoin.disabled = true;
+        elements.appShell.classList.add('suspense-active');
+        elements.verdictContainer.querySelector('.verdict-card').classList.remove('visible');
+
+        // Ensure both faces are visible during flight
+        elements.faceA.style.visibility = 'visible';
+        elements.faceB.style.visibility = 'visible';
+
+        const duration = state.duration;
+        let timeLeft = duration;
+
+        elements.btnFlipText.textContent = `Menentukan Pilihan (${timeLeft}s)...`;
+        elements.statusTicker.textContent = `Koin sedang berputar untuk ${state.userName}...`;
+        elements.statusTicker.classList.add('active');
+
+        if (countdownTimer) clearInterval(countdownTimer);
+        countdownTimer = setInterval(() => {
+            timeLeft--;
+            if (timeLeft > 0) {
+                elements.btnFlipText.textContent = `Menentukan Pilihan (${timeLeft}s)...`;
+            } else {
+                clearInterval(countdownTimer);
+            }
+        }, 1000);
+
+        // Sound start
+        playTensionAudio(duration);
+
+        // Random determination: 0 = A, 1 = B
+        const winner = Math.floor(Math.random() * 2);
+
+        // 3D physics calculations
+        const totalSpins = Math.max(10, Math.round(duration * 2.5));
+        const extraDegrees = totalSpins * 360;
+        const currentMod = state.currentRotation % 360;
+        const targetMod = (winner === 0) ? 0 : 180;
+        let delta = targetMod - currentMod;
+        if (delta < 0) delta += 360;
+        state.currentRotation += extraDegrees + delta;
+
+        // Apply CSS transform
+        elements.coin.style.transition = `transform ${duration}s cubic-bezier(0.08, 0.95, 0.15, 1)`;
+        elements.coinWrapper.style.animationDuration = `${duration}s`;
+        elements.coinWrapper.classList.remove('flipping');
+        void elements.coinWrapper.offsetWidth; // Reflow
+        elements.coinWrapper.classList.add('flipping');
+        elements.coin.style.transform = `rotateY(${state.currentRotation}deg)`;
+
+        // Result Reveal
+        setTimeout(() => {
+            if (countdownTimer) clearInterval(countdownTimer);
+
+            state.isFlipping = false;
+            elements.btnFlipCoin.disabled = false;
+            elements.btnFlipText.textContent = 'Putar Koin Lagi';
+            elements.appShell.classList.remove('suspense-active');
+            elements.statusTicker.classList.remove('active');
+            elements.statusTicker.textContent = '';
+
+            // Sound celebration & confetti
+            playCelebrationAudio();
+            triggerConfetti();
+
+            // Stats & Label
+            state.totalFlips++;
+            let chosenText = '';
+            let chosenSide = '';
+
+            if (winner === 0) {
+                state.winsA++;
+                chosenSide = 'Sisi A (Emas)';
+                chosenText = state.optionA;
+                elements.faceA.style.visibility = 'visible';
+                elements.faceB.style.visibility = 'hidden';
+            } else {
+                state.winsB++;
+                chosenSide = 'Sisi B (Perak)';
+                chosenText = state.optionB;
+                elements.faceA.style.visibility = 'hidden';
+                elements.faceB.style.visibility = 'visible';
+            }
+
+            state.lastVerdict = {
+                user: state.userName,
+                side: chosenSide,
+                choice: chosenText
+            };
+
+            // Update Verdict Card
+            elements.verdictUser.textContent = `Peserta: ${state.userName}`;
+            elements.verdictSide.textContent = chosenSide;
+            elements.verdictChoice.textContent = chosenText;
+            elements.verdictContainer.querySelector('.verdict-card').classList.add('visible');
+
+            // Update Stats Display
+            elements.statTotalCount.textContent = state.totalFlips;
+            elements.statCountA.textContent = state.winsA;
+            elements.statCountB.textContent = state.winsB;
+        }, duration * 1000);
+    }
+
+    function copyVerdictToClipboard() {
+        if (!state.lastVerdict) return;
+        const text = `Hasil KoinTakdir untuk ${state.lastVerdict.user}: "${state.lastVerdict.choice}" (${state.lastVerdict.side})`;
+        
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast('Keputusan berhasil disalin ke clipboard');
+                elements.copyButtonText.textContent = 'Tersalin!';
+                setTimeout(() => {
+                    elements.copyButtonText.textContent = 'Salin Hasil';
+                }, 2000);
+            }).catch(() => {
+                fallbackCopyText(text);
+            });
+        } else {
+            fallbackCopyText(text);
+        }
+    }
+
+    function fallbackCopyText(text) {
+        window.prompt('Salin teks keputusan ini:', text);
+    }
+
+    // =========================================================================
+    // 5. EVENT LISTENERS ATTACHMENT
+    // =========================================================================
+
+    function initEvents() {
+        // Step 1 navigation
+        elements.btnGoToStep2.addEventListener('click', handleStep1Submission);
+        elements.inputUserName.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') handleStep1Submission();
+        });
+        elements.inputUserName.addEventListener('input', () => {
+            if (elements.inputUserName.value.trim()) {
+                elements.inputUserName.classList.remove('is-invalid');
+                elements.userNameError.classList.remove('visible');
+            }
+        });
+
+        // Step 2 back button
+        elements.btnBackToStep1.addEventListener('click', () => setStep(1));
+
+        // Duration Slider & Presets
+        elements.timerSlider.addEventListener('input', (e) => {
+            updateDuration(e.target.value);
+        });
+
+        elements.presetChips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                const time = chip.getAttribute('data-time');
+                updateDuration(time);
+            });
+        });
+
+        // Quick Examples
+        elements.exampleButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const a = btn.getAttribute('data-a');
+                const b = btn.getAttribute('data-b');
+                elements.inputOptionA.value = a;
+                elements.inputOptionB.value = b;
+                elements.inputOptionA.classList.remove('is-invalid');
+                elements.inputOptionB.classList.remove('is-invalid');
+                elements.optionAError.classList.remove('visible');
+                elements.optionBError.classList.remove('visible');
+                showToast('Contoh pilihan diterapkan');
+            });
+        });
+
+        // Audio Toggle
+        elements.soundToggleBtn.addEventListener('click', toggleAudio);
+
+        // Coin Flip Trigger (Button or Coin Click)
+        elements.btnFlipCoin.addEventListener('click', executeFlip);
+        elements.coinWrapper.addEventListener('click', executeFlip);
+        elements.coinWrapper.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                executeFlip();
+            }
+        });
+
+        // Verdict Actions
+        elements.btnCopyVerdict.addEventListener('click', copyVerdictToClipboard);
+        elements.btnReplayFlip.addEventListener('click', executeFlip);
+    }
+
+    // Start
+    initEvents();
+
+})();
+
+</script>
+</body>
+</html>
